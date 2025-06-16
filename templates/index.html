@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Mood Bot</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(to right, #dfe9f3, #ffffff);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .container {
+      background: #ffffff;
+      border-radius: 16px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+      width: 90%;
+      max-width: 600px;
+      padding: 20px 25px;
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    #chat-box {
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      padding: 15px;
+      height: 350px;
+      overflow-y: auto;
+      background: #f9f9f9;
+    }
+
+    .user, .bot {
+      margin: 10px 0;
+      line-height: 1.5;
+    }
+
+    .user b {
+      color: #0066cc;
+    }
+
+    .bot b {
+      color: #2e8b57;
+    }
+
+    input, button {
+      padding: 12px;
+      margin-top: 15px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 16px;
+    }
+
+    #user-input {
+      width: calc(100% - 100px);
+    }
+
+    button {
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      cursor: pointer;
+      margin-left: 10px;
+      width: 80px;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+
+    .input-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    @media (max-width: 500px) {
+      .input-row {
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      #user-input {
+        width: 100%;
+      }
+
+      button {
+        width: 100%;
+        margin-left: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Mood Bot</h2>
+    <div id="chat-box"></div>
+    <div class="input-row">
+      <input id="user-input" placeholder="How are you feeling today?" />
+      <button onclick="send()">Send</button>
+    </div>
+  </div>
+
+  <script>
+    async function send() {
+      const input = document.getElementById("user-input");
+      const msg = input.value.trim();
+      if (!msg) return;
+
+      const chatBox = document.getElementById("chat-box");
+      chatBox.innerHTML += `<div class="user"><b>You:</b> ${msg}</div>`;
+
+      const res = await fetch("/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: msg })
+      });
+
+      const data = await res.json();
+      chatBox.innerHTML += `<div class="bot"><b>MoodBot:</b> ${data.reply}</div>`;
+      input.value = "";
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
+  </script>
+</body>
+</html>
